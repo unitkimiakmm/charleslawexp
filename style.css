@@ -302,3 +302,82 @@ input:focus {
     }
 
 }
+
+/* =========================
+   REGRESSION RESULTS
+========================= */
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.result-label {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.result-item strong {
+    text-align: right;
+}
+
+.absolute-zero {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.comparison-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.comparison-box div {
+    background: #f1f5f9;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+}
+
+.comparison-box span {
+    display: block;
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 7px;
+}
+
+.comparison-box strong {
+    font-size: 20px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 20px 0;
+}
+
+
+@media (max-width: 500px) {
+
+    .result-item {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .result-item strong {
+        text-align: left;
+    }
+
+    .comparison-box {
+        grid-template-columns: 1fr;
+    }
+
+}
