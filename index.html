@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Charles' Law Data Analyzer</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="app">
+
+        <!-- =========================
+             HOME SCREEN
+        ========================== -->
+        <section id="homeScreen" class="screen active">
+
+            <div class="header">
+                <div class="experiment-icon">🧪</div>
+
+                <h1>Charles' Law</h1>
+
+                <p class="subtitle">
+                    Experimental Data Analyzer
+                </p>
+            </div>
+
+            <div class="card">
+
+                <h2>Objective</h2>
+
+                <p>
+                    Investigate the relationship between the height
+                    of the air column and temperature at constant pressure.
+                </p>
+
+            </div>
+
+            <div class="card principle">
+
+                <h2>Charles' Law</h2>
+
+                <p>
+                    At constant pressure, the volume of a fixed mass
+                    of gas is directly proportional to its absolute
+                    temperature.
+                </p>
+
+                <div class="formula">
+                    V ∝ T
+                </div>
+
+                <p class="small-text">
+                    Temperature must be expressed in Kelvin (K).
+                </p>
+
+            </div>
+
+            <button
+                class="primary-button"
+                onclick="startExperiment()">
+                Start Data Analysis
+            </button>
+
+        </section>
+
+
+        <!-- =========================
+             DATA ENTRY SCREEN
+        ========================== -->
+        <section id="dataScreen" class="screen">
+
+            <div class="top-bar">
+
+                <button
+                    class="back-button"
+                    onclick="showScreen('homeScreen')">
+                    ←
+                </button>
+
+                <div>
+                    <h1>Experimental Data</h1>
+                    <p>Enter your laboratory readings</p>
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h2>Temperature & Height</h2>
+
+                <p class="instruction">
+                    Enter the temperature in °C and the measured
+                    height of the air column in cm.
+                </p>
+
+
+                <!-- READING 1 -->
+
+                <div class="reading-card">
+
+                    <div class="reading-title">
+                        Reading 1
+                    </div>
+
+                    <div class="input-row">
+
+                        <div class="input-group">
+
+                            <label for="temp1">
+                                Temperature / °C
+                            </label>
+
+                            <input
+                                type="number"
+                                id="temp1"
+                                step="0.1"
+                                placeholder="e.g. 25.0"
+                                oninput="updateKelvin(1)"
+                            >
+
+                        </div>
+
+
+                        <div class="input-group">
+
+                            <label>
+                                Temperature / K
+                            </label>
+
+                            <div
+                                id="kelvin1"
+                                class="calculated-value">
+                                —
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="height1">
+                            Height of air column / cm
+                        </label>
+
+                        <input
+                            type="number"
+                            id="height1"
+                            step="0.1"
+                            min="0"
+                            placeholder="e.g. 8.2"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- READING 2 -->
+
+                <div class="reading-card">
+
+                    <div class="reading-title">
+                        Reading 2
+                    </div>
+
+                    <div class="input-row">
+
+                        <div class="input-group">
+
+                            <label for="temp2">
+                                Temperature / °C
+                            </label>
+
+                            <input
+                                type="number"
+                                id="temp2"
+                                step="0.1"
+                                placeholder="e.g. 30.0"
+                                oninput="updateKelvin(2)"
+                            >
+
+                        </div>
+
+
+                        <div class="input-group">
+
+                            <label>
+                                Temperature / K
+                            </label>
+
+                            <div
+                                id="kelvin2"
+                                class="calculated-value">
+                                —
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="height2">
+                            Height of air column / cm
+                        </label>
+
+                        <input
+                            type="number"
+                            id="height2"
+                            step="0.1"
+                            min="0"
+                            placeholder="e.g. 8.7"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- READING 3 -->
+
+                <div class="reading-card">
+
+                    <div class="reading-title">
+                        Reading 3
+                    </div>
+
+                    <div class="input-row">
+
+                        <div class="input-group">
+
+                            <label for="temp3">
+                                Temperature / °C
+                            </label>
+
+                            <input
+                                type="number"
+                                id="temp3"
+                                step="0.1"
+                                placeholder="e.g. 35.0"
+                                oninput="updateKelvin(3)"
+                            >
+
+                        </div>
+
+
+                        <div class="input-group">
+
+                            <label>
+                                Temperature / K
+                            </label>
+
+                            <div
+                                id="kelvin3"
+                                class="calculated-value">
+                                —
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="height3">
+                            Height of air column / cm
+                        </label>
+
+                        <input
+                            type="number"
+                            id="height3"
+                            step="0.1"
+                            min="0"
+                            placeholder="e.g. 9.2"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- VALIDATION MESSAGE -->
+
+            <div
+                id="validationMessage"
+                class="validation-message hidden">
+            </div>
+
+
+            <button
+                class="primary-button"
+                onclick="validateData()">
+
+                Analyse Data
+
+            </button>
+
+        </section>
+
+
+        <!-- =========================
+             ANALYSIS SCREEN
+        ========================== -->
+        <section id="analysisScreen" class="screen">
+
+            <div class="top-bar">
+
+                <button
+                    class="back-button"
+                    onclick="showScreen('dataScreen')">
+                    ←
+                </button>
+
+                <div>
+                    <h1>Analysis</h1>
+                    <p>Experimental results</p>
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <h2>Data Ready</h2>
+
+                <p>
+                    Your experimental data has passed the
+                    initial validation.
+                </p>
+
+                <div class="success-message">
+                    ✓ Data successfully entered
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <h2>Experimental Data</h2>
+
+                <div id="dataSummary"></div>
+
+            </div>
+
+            <div class="card coming-soon">
+
+                <h2>📈 Graph</h2>
+
+                <p>
+                    The graph and linear regression analysis
+                    will be added in the next development phase.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="app.js"></script>
+
+</body>
+</html>
