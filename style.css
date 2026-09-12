@@ -1,0 +1,304 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f6f9;
+    color: #1f2937;
+}
+
+.app {
+    width: 100%;
+    max-width: 700px;
+    margin: auto;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+    text-align: center;
+    padding: 30px 10px 20px;
+}
+
+.experiment-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.subtitle {
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 16px;
+}
+
+
+/* =========================
+   TOP BAR
+========================= */
+
+.top-bar {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.top-bar h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.top-bar p {
+    margin: 4px 0 0;
+    color: #64748b;
+}
+
+.back-button {
+    border: none;
+    background: white;
+    border-radius: 10px;
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+
+/* =========================
+   CARDS
+========================= */
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+}
+
+.card h2 {
+    margin-top: 0;
+    font-size: 19px;
+}
+
+.card p {
+    line-height: 1.6;
+}
+
+.principle {
+    text-align: center;
+}
+
+.formula {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.small-text {
+    font-size: 14px;
+    color: #64748b;
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+.primary-button {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background: #2563eb;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.primary-button:hover {
+    opacity: 0.9;
+}
+
+.primary-button:active {
+    transform: scale(0.99);
+}
+
+
+/* =========================
+   DATA ENTRY
+========================= */
+
+.instruction {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.reading-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 15px;
+}
+
+.reading-title {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #334155;
+}
+
+.input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.input-group {
+    margin-bottom: 14px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 16px;
+    background: white;
+}
+
+input:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.calculated-value {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: #475569;
+    font-weight: bold;
+    min-height: 45px;
+}
+
+
+/* =========================
+   VALIDATION
+========================= */
+
+.validation-message {
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.validation-message.hidden {
+    display: none;
+}
+
+.validation-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+
+/* =========================
+   SUCCESS
+========================= */
+
+.success-message {
+    padding: 14px;
+    background: #dcfce7;
+    color: #166534;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+
+/* =========================
+   DATA SUMMARY
+========================= */
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 10px 6px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: center;
+}
+
+.data-table th {
+    font-size: 13px;
+    color: #475569;
+}
+
+.data-table td {
+    font-size: 14px;
+}
+
+
+/* =========================
+   COMING SOON
+========================= */
+
+.coming-soon {
+    text-align: center;
+    border: 2px dashed #cbd5e1;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 500px) {
+
+    .app {
+        padding: 14px;
+    }
+
+    .header h1 {
+        font-size: 28px;
+    }
+
+    .input-row {
+        grid-template-columns: 1fr;
+    }
+
+}
