@@ -1,7 +1,14 @@
 // ========================================
 // CHARLES' LAW DATA ANALYZER
-// VERSION 1A
+// VERSION 1B
 // ========================================
+
+
+// ----------------------------------------
+// GLOBAL DATA
+// ----------------------------------------
+
+let experimentalData = [];
 
 
 // ----------------------------------------
@@ -80,7 +87,10 @@ function validateData() {
     const data = [];
 
 
-    // Collect readings
+    // ----------------------------------------
+    // COLLECT 3 READINGS
+    // ----------------------------------------
+
     for (let i = 1; i <= 3; i++) {
 
         const temperature =
@@ -94,7 +104,7 @@ function validateData() {
             );
 
 
-        // Check temperature
+        // Temperature validation
         if (Number.isNaN(temperature)) {
 
             showValidationError(
@@ -105,7 +115,7 @@ function validateData() {
         }
 
 
-        // Check height
+        // Height validation
         if (Number.isNaN(height)) {
 
             showValidationError(
@@ -127,14 +137,20 @@ function validateData() {
         }
 
 
+        // Celsius → Kelvin
         const kelvin = temperature + 273.15;
 
 
         data.push({
+
             reading: i,
+
             celsius: temperature,
+
             kelvin: kelvin,
+
             height: height
+
         });
 
     }
@@ -162,15 +178,34 @@ function validateData() {
 
 
     // ----------------------------------------
-    // DATA VALID
+    // STORE DATA
     // ----------------------------------------
 
-    showValidationSuccess(
-        "✓ Data successfully validated."
-    );
+    experimentalData = data;
 
+
+    // ----------------------------------------
+    // CALCULATE REGRESSION
+    // ----------------------------------------
+
+    const regression =
+        calculateLinearRegression(
+            data
+        );
+
+
+    // ----------------------------------------
+    // DISPLAY RESULTS
+    // ----------------------------------------
 
     displayDataSummary(data);
+
+    displayRegressionResults(regression);
+
+
+    showValidationSuccess(
+        "✓ Data successfully analysed."
+    );
 
 
     // Move to analysis screen
@@ -178,46 +213,157 @@ function validateData() {
 
         showScreen("analysisScreen");
 
-    }, 500);
+    }, 400);
 
 }
 
 
 // ----------------------------------------
-// SHOW VALIDATION ERROR
+// LINEAR REGRESSION
 // ----------------------------------------
 
-function showValidationError(message) {
+function calculateLinearRegression(data) {
 
-    const validationMessage =
-        document.getElementById("validationMessage");
-
-    validationMessage.textContent = "⚠️ " + message;
-
-    validationMessage.classList.remove(
-        "hidden",
-        "validation-success"
-    );
-
-}
+    const n = data.length;
 
 
-// ----------------------------------------
-// SHOW VALIDATION SUCCESS
-// ----------------------------------------
+    // x = temperature in K
+    // y = height of air column in cm
 
-function showValidationSuccess(message) {
+    const x =
+        data.map(item => item.kelvin);
 
-    const validationMessage =
-        document.getElementById("validationMessage");
+    const y =
+        data.map(item => item.height);
 
-    validationMessage.textContent = message;
 
-    validationMessage.classList.remove("hidden");
+    // ----------------------------------------
+    // SUMS
+    // ----------------------------------------
 
-    validationMessage.classList.add(
-        "validation-success"
-    );
+    const sumX =
+        x.reduce((sum, value) => sum + value, 0);
+
+    const sumY =
+        y.reduce((sum, value) => sum + value, 0);
+
+    const sumXY =
+        x.reduce(
+            (sum, value, index) =>
+                sum + value * y[index],
+            0
+        );
+
+    const sumX2 =
+        x.reduce(
+            (sum, value) =>
+                sum + value * value,
+            0
+        );
+
+    const sumY2 =
+        y.reduce(
+            (sum, value) =>
+                sum + value * value,
+            0
+        );
+
+
+    // ----------------------------------------
+    // GRADIENT
+    // ----------------------------------------
+
+    const denominator =
+        (n * sumX2) - (sumX * sumX);
+
+
+    const slope =
+        ((n * sumXY) - (sumX * sumY))
+        /
+        denominator;
+
+
+    // ----------------------------------------
+    // Y-INTERCEPT
+    // ----------------------------------------
+
+    const intercept =
+        (sumY - slope * sumX)
+        /
+        n;
+
+
+    // ----------------------------------------
+    // PREDICTED VALUES
+    // ----------------------------------------
+
+    const predicted =
+        x.map(
+            value =>
+                slope * value + intercept
+        );
+
+
+    // ----------------------------------------
+    // R²
+    // ----------------------------------------
+
+    const meanY =
+        sumY / n;
+
+
+    const ssTotal =
+        y.reduce(
+            (sum, value) =>
+                sum + Math.pow(value - meanY, 2),
+            0
+        );
+
+
+    const ssResidual =
+        y.reduce(
+            (sum, value, index) =>
+                sum +
+                Math.pow(
+                    value - predicted[index],
+                    2
+                ),
+            0
+        );
+
+
+    const rSquared =
+        1 - (ssResidual / ssTotal);
+
+
+    // ----------------------------------------
+    // X-INTERCEPT
+    // ----------------------------------------
+
+    let xIntercept = null;
+
+
+    if (slope !== 0) {
+
+        xIntercept =
+            -intercept / slope;
+
+    }
+
+
+    return {
+
+        slope: slope,
+
+        intercept: intercept,
+
+        rSquared: rSquared,
+
+        xIntercept: xIntercept,
+
+        predicted: predicted
+
+    };
 
 }
 
@@ -239,15 +385,21 @@ function displayDataSummary(data) {
             <thead>
 
                 <tr>
+
                     <th>Reading</th>
+
                     <th>°C</th>
+
                     <th>K</th>
+
                     <th>Height / cm</th>
+
                 </tr>
 
             </thead>
 
             <tbody>
+
     `;
 
 
@@ -282,4 +434,234 @@ function displayDataSummary(data) {
 
 
     container.innerHTML = html;
+
+}
+
+
+// ----------------------------------------
+// DISPLAY REGRESSION RESULTS
+// ----------------------------------------
+
+function displayRegressionResults(regression) {
+
+    const analysisScreen =
+        document.getElementById("analysisScreen");
+
+
+    // Remove previous result card
+    const oldResult =
+        document.getElementById("regressionResults");
+
+    if (oldResult) {
+
+        oldResult.remove();
+
+    }
+
+
+    const resultCard =
+        document.createElement("div");
+
+    resultCard.id =
+        "regressionResults";
+
+    resultCard.className =
+        "card";
+
+
+    const slope =
+        regression.slope;
+
+    const intercept =
+        regression.intercept;
+
+    const rSquared =
+        regression.rSquared;
+
+    const xIntercept =
+        regression.xIntercept;
+
+
+    // ----------------------------------------
+    // EQUATION
+    // ----------------------------------------
+
+    const sign =
+        intercept >= 0 ? "+" : "−";
+
+    const absoluteIntercept =
+        Math.abs(intercept);
+
+
+    const equation =
+        `H = ${slope.toFixed(5)}T ${sign} ${absoluteIntercept.toFixed(3)}`;
+
+
+    resultCard.innerHTML = `
+
+        <h2>📊 Linear Regression</h2>
+
+        <div class="result-item">
+
+            <span class="result-label">
+                Best-fit equation
+            </span>
+
+            <strong>
+                ${equation}
+            </strong>
+
+        </div>
+
+
+        <div class="result-item">
+
+            <span class="result-label">
+                Gradient
+            </span>
+
+            <strong>
+                ${slope.toFixed(5)} cm K⁻¹
+            </strong>
+
+        </div>
+
+
+        <div class="result-item">
+
+            <span class="result-label">
+                Y-intercept
+            </span>
+
+            <strong>
+                ${intercept.toFixed(3)} cm
+            </strong>
+
+        </div>
+
+
+        <div class="result-item">
+
+            <span class="result-label">
+                R²
+            </span>
+
+            <strong>
+                ${rSquared.toFixed(4)}
+            </strong>
+
+        </div>
+
+
+        <hr>
+
+
+        <h2>🌡️ Experimental Absolute Zero</h2>
+
+        <div class="absolute-zero">
+
+            ${
+                xIntercept !== null
+                ? xIntercept.toFixed(2) + " K"
+                : "Unable to calculate"
+            }
+
+        </div>
+
+
+        <p class="small-text">
+
+            The experimental absolute zero is obtained by
+            extrapolating the best-fit line to the point
+            where the height of the air column becomes zero.
+
+        </p>
+
+
+        <div class="comparison-box">
+
+            <div>
+
+                <span>
+                    Experimental
+                </span>
+
+                <strong>
+                    ${
+                        xIntercept !== null
+                        ? xIntercept.toFixed(2) + " K"
+                        : "—"
+                    }
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Theoretical
+                </span>
+
+                <strong>
+                    0 K
+                </strong>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    analysisScreen.appendChild(resultCard);
+
+}
+
+
+// ----------------------------------------
+// SHOW VALIDATION ERROR
+// ----------------------------------------
+
+function showValidationError(message) {
+
+    const validationMessage =
+        document.getElementById("validationMessage");
+
+
+    validationMessage.textContent =
+        "⚠️ " + message;
+
+
+    validationMessage.classList.remove(
+        "hidden",
+        "validation-success"
+    );
+
+}
+
+
+// ----------------------------------------
+// SHOW VALIDATION SUCCESS
+// ----------------------------------------
+
+function showValidationSuccess(message) {
+
+    const validationMessage =
+        document.getElementById("validationMessage");
+
+
+    validationMessage.textContent =
+        message;
+
+
+    validationMessage.classList.remove(
+        "hidden"
+    );
+
+
+    validationMessage.classList.add(
+        "validation-success"
+    );
+
 }
