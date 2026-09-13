@@ -7,6 +7,8 @@
     <title>Charles' Law Data Analyzer</title>
 
     <link rel="stylesheet" href="style.css">
+   
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -352,17 +354,70 @@
 
             </div>
 
-            <div class="card coming-soon">
+           <div class="card graph-card">
 
-                <h2>📈 Graph</h2>
+    <div class="section-title">
+        <h2>Charles' Law Graph</h2>
+        <p>Height of air column against temperature</p>
+    </div>
 
-                <p>
-                    The graph and linear regression analysis
-                    will be added in the next development phase.
-                </p>
+    <div class="graph-container">
+        <canvas id="charlesLawChart"></canvas>
+    </div>
 
-            </div>
+    <div class="graph-legend">
+        <div>
+            <span class="legend-dot experimental"></span>
+            Experimental data
+        </div>
 
+        <div>
+            <span class="legend-line regression"></span>
+            Best-fit line
+        </div>
+
+        <div>
+            <span class="legend-line theoretical"></span>
+            Theoretical 0 K reference
+        </div>
+    </div>
+
+</div>
+<div class="card interpretation-card">
+
+    <h2>Graph Interpretation</h2>
+
+    <div class="interpretation-item">
+        <span class="interpretation-label">
+            Experimental absolute zero
+        </span>
+
+        <strong id="graphAbsoluteZero">
+            —
+        </strong>
+    </div>
+
+    <div class="interpretation-item">
+        <span class="interpretation-label">
+            Theoretical absolute zero
+        </span>
+
+        <strong>
+            0.00 K
+        </strong>
+    </div>
+
+    <div class="interpretation-item">
+        <span class="interpretation-label">
+            Difference
+        </span>
+
+        <strong id="absoluteZeroDifference">
+            —
+        </strong>
+    </div>
+
+</div>
         </section>
 
     </main>
