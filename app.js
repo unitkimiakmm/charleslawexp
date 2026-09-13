@@ -9,6 +9,7 @@
 // ----------------------------------------
 
 let experimentalData = [];
+let charlesLawChart = null;
 
 
 // ----------------------------------------
@@ -188,19 +189,13 @@ function validateData() {
     // CALCULATE REGRESSION
     // ----------------------------------------
 
-    const regression =
-        calculateLinearRegression(
-            data
-        );
+    const regression = calculateLinearRegression(data);
 
+displayDataSummary(data);
 
-    // ----------------------------------------
-    // DISPLAY RESULTS
-    // ----------------------------------------
+displayRegressionResults(regression);
 
-    displayDataSummary(data);
-
-    displayRegressionResults(regression);
+createGraph(data, regression);
 
 
     showValidationSuccess(
@@ -618,7 +613,294 @@ function displayRegressionResults(regression) {
 
 }
 
+function createGraph(data, regression) {
 
+    const canvas = document.getElementById("charlesLawChart");
+
+    if (!canvas) {
+        console.error("Graph canvas not found.");
+        return;
+    }
+
+    // Destroy previous chart if it exists
+    if (charlesLawChart) {
+        charlesLawChart.destroy();
+    }
+
+    // Sort data according to temperature
+    const sortedData = [...data].sort((a, b) => a.kelvin - b.kelvin);
+
+    const minTemperature = Math.min(
+        0,
+        regression.xIntercept,
+        ...sortedData.map(d => d.kelvin)
+    );
+
+    const maxTemperature = Math.max(
+        ...sortedData.map(d => d.kelvin)
+    );
+
+    // Add some space to the right side of graph
+    const graphMaxTemperature = maxTemperature + 10;
+
+    /*
+     * Experimental data points
+     */
+    const experimentalPoints = sortedData.map(d => ({
+        x: d.kelvin,
+        y: d.height
+    }));
+
+
+    /*
+     * Regression line
+     *
+     * We calculate two points:
+     * 1. Extended point towards 0 K / experimental intercept
+     * 2. Highest experimental temperature
+     */
+    const regressionStartTemperature =
+        Math.min(0, regression.xIntercept);
+
+    const regressionEndTemperature =
+        graphMaxTemperature;
+
+    const regressionPoints = [
+        {
+            x: regressionStartTemperature,
+            y: regression.slope * regressionStartTemperature
+                + regression.intercept
+        },
+        {
+            x: regressionEndTemperature,
+            y: regression.slope * regressionEndTemperature
+                + regression.intercept
+        }
+    ];
+
+
+    /*
+     * Theoretical 0 K reference
+     *
+     * A vertical line at 0 K.
+     */
+    const theoreticalZeroLine = [
+        {
+            x: 0,
+            y: 0
+        },
+        {
+            x: 0,
+            y: calculateGraphMaximumY(data, regression)
+        }
+    ];
+
+
+    charlesLawChart = new Chart(canvas, {
+
+        type: "scatter",
+
+        data: {
+
+            datasets: [
+
+                {
+                    label: "Experimental data",
+
+                    data: experimentalPoints,
+
+                    pointRadius: 7,
+
+                    pointHoverRadius: 9,
+
+                    showLine: false
+                },
+
+
+                {
+                    label: "Best-fit line",
+
+                    data: regressionPoints,
+
+                    type: "line",
+
+                    fill: false,
+
+                    pointRadius: 0,
+
+                    borderWidth: 2,
+
+                    tension: 0
+                },
+
+
+                {
+                    label: "Theoretical 0 K",
+
+                    data: theoreticalZeroLine,
+
+                    type: "line",
+
+                    fill: false,
+
+                    pointRadius: 0,
+
+                    borderWidth: 2,
+
+                    borderDash: [6, 6],
+
+                    tension: 0
+                }
+
+            ]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            interaction: {
+                mode: "nearest",
+                intersect: false
+            },
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label: function(context) {
+
+                            const x =
+                                Number(context.parsed.x).toFixed(2);
+
+                            const y =
+                                Number(context.parsed.y).toFixed(2);
+
+                            return `T = ${x} K, H = ${y} cm`;
+                        }
+
+                    }
+
+                }
+
+            },
+
+            scales: {
+
+                x: {
+
+                    type: "linear",
+
+                    min: minTemperature,
+
+                    max: graphMaxTemperature,
+
+                    title: {
+
+                        display: true,
+
+                        text: "Temperature / K"
+
+                    }
+
+                },
+
+                y: {
+
+                    beginAtZero: false,
+
+                    title: {
+
+                        display: true,
+
+                        text: "Height of air column / cm"
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+
+    // Update interpretation values
+    updateGraphInterpretation(regression);
+}
+
+function calculateGraphMaximumY(data, regression) {
+
+    const experimentalMaximum =
+        Math.max(...data.map(d => d.height));
+
+    const regressionMaximum =
+        regression.slope *
+        Math.max(...data.map(d => d.kelvin))
+        + regression.intercept;
+
+    return Math.max(
+        experimentalMaximum,
+        regressionMaximum
+    ) * 1.15;
+}
+
+function updateGraphInterpretation(regression) {
+
+    const absoluteZeroElement =
+        document.getElementById("graphAbsoluteZero");
+
+    const differenceElement =
+        document.getElementById("absoluteZeroDifference");
+
+
+    if (absoluteZeroElement) {
+
+        if (regression.xIntercept !== null) {
+
+            absoluteZeroElement.textContent =
+                `${regression.xIntercept.toFixed(2)} K`;
+
+        } else {
+
+            absoluteZeroElement.textContent =
+                "Cannot be determined";
+
+        }
+
+    }
+
+
+    if (differenceElement) {
+
+        if (regression.xIntercept !== null) {
+
+            const difference =
+                Math.abs(regression.xIntercept);
+
+            differenceElement.textContent =
+                `${difference.toFixed(2)} K`;
+
+        } else {
+
+            differenceElement.textContent =
+                "—";
+
+        }
+
+    }
+
+}
 // ----------------------------------------
 // SHOW VALIDATION ERROR
 // ----------------------------------------
