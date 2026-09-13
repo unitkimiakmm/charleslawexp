@@ -622,30 +622,24 @@ function createGraph(data, regression) {
         return;
     }
 
-    // Destroy previous chart if it exists
+    // Destroy previous chart
     if (charlesLawChart) {
         charlesLawChart.destroy();
     }
 
-    // Sort data according to temperature
-    const sortedData = [...data].sort((a, b) => a.kelvin - b.kelvin);
 
-    const minTemperature = Math.min(
-        0,
-        regression.xIntercept,
-        ...sortedData.map(d => d.kelvin)
+    // Sort experimental data by temperature
+    const sortedData = [...data].sort(
+        (a, b) => a.kelvin - b.kelvin
     );
 
-    const maxTemperature = Math.max(
-        ...sortedData.map(d => d.kelvin)
-    );
-
-    // Add some space to the right side of graph
-    const graphMaxTemperature = maxTemperature + 10;
 
     /*
-     * Experimental data points
+     * ============================================
+     * EXPERIMENTAL DATA
+     * ============================================
      */
+
     const experimentalPoints = sortedData.map(d => ({
         x: d.kelvin,
         y: d.height
@@ -653,48 +647,108 @@ function createGraph(data, regression) {
 
 
     /*
-     * Regression line
-     *
-     * We calculate two points:
-     * 1. Extended point towards 0 K / experimental intercept
-     * 2. Highest experimental temperature
+     * ============================================
+     * EXPERIMENTAL BEST-FIT LINE
+     * H = mT + c
+     * ============================================
      */
-    const regressionStartTemperature =
-        Math.min(0, regression.xIntercept);
 
-    const regressionEndTemperature =
-        graphMaxTemperature;
+    const minimumTemperature = 0;
 
-    const regressionPoints = [
+    const maximumTemperature =
+        Math.max(...sortedData.map(d => d.kelvin)) + 20;
+
+
+    const experimentalLine = [
+
         {
-            x: regressionStartTemperature,
-            y: regression.slope * regressionStartTemperature
+            x: minimumTemperature,
+            y:
+                regression.slope * minimumTemperature
                 + regression.intercept
         },
+
         {
-            x: regressionEndTemperature,
-            y: regression.slope * regressionEndTemperature
+            x: maximumTemperature,
+            y:
+                regression.slope * maximumTemperature
                 + regression.intercept
         }
+
     ];
 
 
     /*
-     * Theoretical 0 K reference
+     * ============================================
+     * THEORETICAL CHARLES' LAW LINE
      *
-     * A vertical line at 0 K.
+     * H ∝ T
+     *
+     * H = kT
+     *
+     * We use the middle experimental reading
+     * as the reference point.
+     * ============================================
      */
-    const theoreticalZeroLine = [
+
+    const referencePoint =
+        sortedData[Math.floor(sortedData.length / 2)];
+
+
+    const theoreticalGradient =
+        referencePoint.height /
+        referencePoint.kelvin;
+
+
+    const theoreticalLine = [
+
         {
             x: 0,
             y: 0
         },
+
         {
-            x: 0,
-            y: calculateGraphMaximumY(data, regression)
+            x: maximumTemperature,
+            y:
+                theoreticalGradient *
+                maximumTemperature
         }
+
     ];
 
+
+    /*
+     * ============================================
+     * DETERMINE Y-AXIS RANGE
+     * ============================================
+     */
+
+    const experimentalMaximum =
+        Math.max(
+            ...experimentalPoints.map(p => p.y)
+        );
+
+    const theoreticalMaximum =
+        theoreticalGradient *
+        maximumTemperature;
+
+
+    const maximumHeight =
+        Math.max(
+            experimentalMaximum,
+            theoreticalMaximum
+        );
+
+
+    const yAxisMaximum =
+        maximumHeight * 1.15;
+
+
+    /*
+     * ============================================
+     * CREATE CHART
+     * ============================================
+     */
 
     charlesLawChart = new Chart(canvas, {
 
@@ -703,6 +757,10 @@ function createGraph(data, regression) {
         data: {
 
             datasets: [
+
+                /*
+                 * Experimental points
+                 */
 
                 {
                     label: "Experimental data",
@@ -717,10 +775,14 @@ function createGraph(data, regression) {
                 },
 
 
-                {
-                    label: "Best-fit line",
+                /*
+                 * Experimental best-fit line
+                 */
 
-                    data: regressionPoints,
+                {
+                    label: "Experimental line",
+
+                    data: experimentalLine,
 
                     type: "line",
 
@@ -728,16 +790,20 @@ function createGraph(data, regression) {
 
                     pointRadius: 0,
 
-                    borderWidth: 2,
+                    borderWidth: 3,
 
                     tension: 0
                 },
 
 
-                {
-                    label: "Theoretical 0 K",
+                /*
+                 * Theoretical Charles' Law line
+                 */
 
-                    data: theoreticalZeroLine,
+                {
+                    label: "Theoretical Charles' Law",
+
+                    data: theoreticalLine,
 
                     type: "line",
 
@@ -745,9 +811,9 @@ function createGraph(data, regression) {
 
                     pointRadius: 0,
 
-                    borderWidth: 2,
+                    borderWidth: 3,
 
-                    borderDash: [6, 6],
+                    borderDash: [8, 6],
 
                     tension: 0
                 }
@@ -756,22 +822,33 @@ function createGraph(data, regression) {
 
         },
 
+
         options: {
 
             responsive: true,
 
             maintainAspectRatio: false,
 
+
             interaction: {
+
                 mode: "nearest",
+
                 intersect: false
+
             },
+
 
             plugins: {
 
                 legend: {
-                    display: false
+
+                    display: true,
+
+                    position: "bottom"
+
                 },
+
 
                 tooltip: {
 
@@ -780,12 +857,20 @@ function createGraph(data, regression) {
                         label: function(context) {
 
                             const x =
-                                Number(context.parsed.x).toFixed(2);
+                                Number(
+                                    context.parsed.x
+                                ).toFixed(2);
 
                             const y =
-                                Number(context.parsed.y).toFixed(2);
+                                Number(
+                                    context.parsed.y
+                                ).toFixed(2);
 
-                            return `T = ${x} K, H = ${y} cm`;
+                            return (
+                                `${context.dataset.label}: `
+                                + `(${x} K, ${y} cm)`
+                            );
+
                         }
 
                     }
@@ -794,15 +879,16 @@ function createGraph(data, regression) {
 
             },
 
+
             scales: {
 
                 x: {
 
                     type: "linear",
 
-                    min: minTemperature,
+                    min: 0,
 
-                    max: graphMaxTemperature,
+                    max: maximumTemperature,
 
                     title: {
 
@@ -814,9 +900,12 @@ function createGraph(data, regression) {
 
                 },
 
+
                 y: {
 
-                    beginAtZero: false,
+                    min: 0,
+
+                    max: yAxisMaximum,
 
                     title: {
 
@@ -833,6 +922,7 @@ function createGraph(data, regression) {
         }
 
     });
+
 
 
     // Update interpretation values
