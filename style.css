@@ -381,3 +381,134 @@ hr {
     }
 
 }
+
+/* ================================
+   GRAPH
+================================ */
+
+.graph-card {
+    margin-top: 20px;
+}
+
+.section-title h2 {
+    margin-bottom: 5px;
+}
+
+.section-title p {
+    margin-top: 0;
+    color: #666;
+}
+
+.graph-container {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    margin-top: 20px;
+}
+
+#charlesLawChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+
+/* ================================
+   GRAPH LEGEND
+================================ */
+
+.graph-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.graph-legend > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.legend-line {
+    width: 25px;
+    height: 3px;
+    display: inline-block;
+}
+
+.legend-dot.experimental {
+    background: #2563eb;
+}
+
+.legend-line.regression {
+    background: #111827;
+}
+
+.legend-line.theoretical {
+    background: #dc2626;
+}
+
+
+/* ================================
+   INTERPRETATION
+================================ */
+
+.interpretation-card {
+    margin-top: 20px;
+}
+
+.interpretation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 14px 0;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.interpretation-item:last-child {
+    border-bottom: none;
+}
+
+.interpretation-label {
+    color: #555;
+}
+
+.interpretation-item strong {
+    font-size: 18px;
+}
+
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 600px) {
+
+    .graph-container {
+        height: 330px;
+    }
+
+    .graph-legend {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .interpretation-item {
+        gap: 15px;
+    }
+
+    .interpretation-item strong {
+        font-size: 16px;
+        text-align: right;
+    }
+
+}
