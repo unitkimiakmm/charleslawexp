@@ -286,46 +286,70 @@
                         >
 
                     </div>
-                    <div class="reading-card">
 
-    <h3>Reading 4</h3>
+                    
+                <!-- READING 4 -->
 
-    <label for="temp4">
-        Temperature / °C
-    </label>
+                <div class="reading-card">
 
-    <input
-        type="number"
-        id="temp4"
-        step="0.1"
-        placeholder="e.g. 55"
-        oninput="updateKelvin(4)"
-    >
+                    <div class="reading-title">
+                        Reading 4
+                    </div>
 
-    <label for="height4">
-        Height / cm
-    </label>
+                    <div class="input-row">
 
-    <input
-        type="number"
-        id="height4"
-        step="0.01"
-        placeholder="e.g. 9.7"
-    >
+                        <div class="input-group">
 
-    <label for="kelvin4">
-        Temperature / K
-    </label>
+                            <label for="temp4">
+                                Temperature / °C
+                            </label>
 
-    <input
-        type="text"
-        id="kelvin4"
-        readonly
-        placeholder="Automatically calculated"
-    >
+                            <input
+                                type="number"
+                                id="temp4"
+                                step="0.1"
+                                placeholder="e.g. 40.0"
+                                oninput="updateKelvin(4)"
+                            >
 
-</div>
+                        </div>
 
+
+                        <div class="input-group">
+
+                            <label>
+                                Temperature / K
+                            </label>
+
+                            <div
+                                id="kelvin4"
+                                class="calculated-value">
+                                —
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="height4">
+                            Height of air column / cm
+                        </label>
+
+                        <input
+                            type="number"
+                            id="height4"
+                            step="0.1"
+                            min="0"
+                            placeholder="e.g. 10.1"
+                        >
+
+                    </div>
+                    
+
+    
                 </div>
 
             </div>
