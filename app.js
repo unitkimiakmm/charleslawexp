@@ -92,7 +92,7 @@ function validateData() {
     // COLLECT 3 READINGS
     // ----------------------------------------
 
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 4; i++) {
 
         const temperature =
             parseFloat(
@@ -691,14 +691,14 @@ function createGraph(data, regression) {
      * ============================================
      */
 
-    const referencePoint =
-        sortedData[Math.floor(sortedData.length / 2)];
-
-
     const theoreticalGradient =
-        referencePoint.height /
-        referencePoint.kelvin;
-
+    sortedData.reduce(
+        (sum, point) => {
+            return sum +
+                (point.height / point.kelvin);
+        },
+        0
+    ) / sortedData.length;
 
     const theoreticalLine = [
 
